@@ -16,6 +16,6 @@ interface IngredientDao {
     @Query("SELECT * FROM ingredients")
     fun loadAllIngredients():Array<Ingredient>
 
-    @Query("SELECT * FROM recipes WHERE id = :id")
-    fun loadIngredient(id: String): Ingredient
+    @Query("SELECT * FROM ingredients WHERE barcode = :barcode")
+    fun loadIngredient(barcode: String): Ingredient
 }
