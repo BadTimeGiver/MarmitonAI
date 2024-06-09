@@ -1,4 +1,5 @@
 package com.example.marmitonai.models
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -13,5 +14,6 @@ data class Ingredient(
     val sugars: Int,
     val protein: Int,
     val salt: Int,
-    val imageId: String?
+    val imageId: String?,
+    @ColumnInfo(defaultValue = "0") val quantity: Int
     )
