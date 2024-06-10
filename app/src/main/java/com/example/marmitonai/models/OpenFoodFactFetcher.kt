@@ -10,11 +10,11 @@ import java.io.FileOutputStream
 import java.io.IOException
 
 class OpenFoodFactFetcher {
-    val userAgent: String = "MarmitonAi/1.0 (zyad.zekri@efrei.net)"
+    val userAgent: String = "MarmitonAi/0.1 (zyad.zekri@efrei.net)"
     val db = AppDatabase.getDatabase(MyApplication.applicationContext())
     private val client: OkHttpClient = OkHttpClient()
 
-    fun ingredientCreator(barcode: String) {
+    suspend fun ingredientCreator(barcode: String) {
         val url = "https://world.openfoodfacts.org/api/v0/product/$barcode.json"
         val request: Request = Request.Builder()
             .url(url)
@@ -58,6 +58,13 @@ class OpenFoodFactFetcher {
         } catch (e: Exception) {
             e.printStackTrace()
         }
+    }
+    suspend fun ingredientDestroyer(barcode: String){
+        db.ingredientDao().deleteIngredient(db.ingredientDao().loadIngredient(barcode))
+    }
+
+    suspend fun changeIngredient(barcode: String, quantity: Int){
+        db.ingredientDao().changeQuantity(barcode, quantity)
     }
 
 
