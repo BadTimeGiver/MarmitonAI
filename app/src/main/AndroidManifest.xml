@@ -12,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MarmitonAI">
         <activity
-            android:name=".views.IngredientsActivity"
+            android:name=".activities.IngredientsActivity"
             android:exported="true"
             >
             <intent-filter>
