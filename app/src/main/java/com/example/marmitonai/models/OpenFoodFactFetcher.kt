@@ -29,6 +29,7 @@ class OpenFoodFactFetcher {
             val json = JSONObject(responseBody)
             val product = json.getJSONObject("product")
 
+            val name = product.optString("product_name", "Unknown Product")
             val servingSize = product.optInt("serving_size", 0)
             val servingUnit = product.optString("serving_quantity", "g")
             val kcal = product.getJSONObject("nutriments").optInt("energy-kcal_100g", 0)
@@ -41,6 +42,7 @@ class OpenFoodFactFetcher {
 
             val ingredient = Ingredient(
                 barcode = barcode,
+                name = name,
                 servingSize = servingSize,
                 servingUnit = servingUnit,
                 kcal = kcal,
