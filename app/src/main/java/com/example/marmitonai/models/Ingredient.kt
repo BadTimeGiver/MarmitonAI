@@ -6,6 +6,7 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "ingredients")
 data class Ingredient(
     @PrimaryKey val barcode: String,
+    val name: String,
     val servingSize: Int,
     val servingUnit: String,
     val kcal: Int,
