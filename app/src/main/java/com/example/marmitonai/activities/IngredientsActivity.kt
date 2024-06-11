@@ -35,6 +35,11 @@ class IngredientsActivity : AppCompatActivity(), IngredientAdapter.OnIngredientC
         recyclerView.adapter = ingredientAdapter
         setEventSubmit()
         fetchIngredients()
+        val recipesButton: Button = findViewById(R.id.recipesButton)
+        recipesButton.setOnClickListener {
+            val intent = Intent(this, RecipesActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     override fun onIngredientClick(ingredient: Ingredient) {

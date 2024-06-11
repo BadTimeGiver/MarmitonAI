@@ -15,10 +15,10 @@ import kotlin.time.Duration.Companion.seconds
 
 class OpenAiFetcher {
 
-    private val openAI = OpenAI(getApiKeyFromManifest(),timeout = Timeout(socket = 360.seconds))
+    private val openAI = OpenAI(getApiKeyFromManifest(), timeout = Timeout(socket = 360.seconds))
     val db = AppDatabase.getDatabase(MyApplication.applicationContext())
 
-    suspend fun createRecipe() {
+    suspend fun createRecipe(name: String) {
         withContext(Dispatchers.IO) {
             val ingredientList: List<Ingredient> = db.ingredientDao().loadAllIngredients()
             if (ingredientList.isEmpty()) {
@@ -32,7 +32,7 @@ class OpenAiFetcher {
             if (ingredientsText.isNotEmpty()) {
                 ingredientsText.setLength(ingredientsText.length - 2)
             }
-            val prompt = "Create a recipe using the following possible ingredients: $ingredientsText. Format:Name, Ingredients, Step 1, Step 2..."
+            val prompt = "Create a recipe called $name using the following possible ingredients: $ingredientsText. Format:Name, Ingredients, Step 1, Step 2..."
             val request = ChatCompletionRequest(
                 model = ModelId("gpt-3.5-turbo"),
                 messages = listOf(ChatMessage(role = ChatRole("user"), content = prompt)),
@@ -43,7 +43,7 @@ class OpenAiFetcher {
             try {
                 val completion = openAI.chatCompletions(request)
                 val recipeText = completion.toString()
-                val recipe = parseRecipeText(recipeText)
+                val recipe = parseRecipeText(recipeText, name)
                 db.recipeDao().insertRecipe(recipe)
 
             } catch (e: Exception) {
@@ -69,10 +69,9 @@ class OpenAiFetcher {
         }
     }
 
-    private fun parseRecipeText(recipeText: String): Recipe {
+    private fun parseRecipeText(recipeText: String, name: String): Recipe {
         val lines = recipeText.split("\n")
-        val name = lines.firstOrNull()?.replace("Recipe:", "")?.trim() ?: "Unnamed Recipe"
-        val description = lines.drop(1).joinToString("\n").trim()
+        val description = lines.joinToString("\n").trim()
         val uuid: UUID = UUID.randomUUID()
         return Recipe(
             id = uuid.hashCode(),
