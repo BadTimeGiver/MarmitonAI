@@ -7,6 +7,15 @@
     android:layout_height="match_parent"
     tools:context=".activities.RecipeDetail">
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/deleteRecipeButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@android:drawable/ic_menu_delete" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -19,6 +28,9 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:text="TextView"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:textSize="20dp"
             android:layout_weight="1" />
 
         <TextView
@@ -26,6 +38,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="TextView"
-            android:layout_weight="10"/>
+            android:layout_weight="10"
+            android:scrollbars="vertical"/>
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

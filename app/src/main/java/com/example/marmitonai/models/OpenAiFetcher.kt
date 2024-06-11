@@ -1,6 +1,9 @@
 package com.example.marmitonai.models
 
 import android.content.pm.PackageManager
+import android.util.Log
+import com.aallam.openai.api.chat.ChatCompletion
+import com.aallam.openai.api.chat.ChatCompletionChunk
 import com.aallam.openai.api.chat.ChatCompletionRequest
 import com.aallam.openai.api.chat.ChatMessage
 import com.aallam.openai.api.chat.ChatRole
@@ -9,6 +12,8 @@ import com.aallam.openai.api.model.ModelId
 import com.aallam.openai.client.OpenAI
 import com.example.marmitonai.MyApplication
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import java.util.UUID
 import kotlin.time.Duration.Companion.seconds
@@ -41,13 +46,16 @@ class OpenAiFetcher {
             )
 
             try {
-                val completion = openAI.chatCompletions(request)
-                val recipeText = completion.toString()
-                val recipe = parseRecipeText(recipeText, name)
+                val completion: Flow<ChatCompletionChunk> = openAI.chatCompletions(request);
+
+                val responseMessage = collectMessages(completion);
+
+                val recipe = parseRecipeText(responseMessage, name)
                 db.recipeDao().insertRecipe(recipe)
 
             } catch (e: Exception) {
                 e.printStackTrace()
+                Log.e("Error", e.toString())
             }
         }
     }
@@ -73,10 +81,26 @@ class OpenAiFetcher {
         val lines = recipeText.split("\n")
         val description = lines.joinToString("\n").trim()
         val uuid: UUID = UUID.randomUUID()
+        Log.d("Description", description)
         return Recipe(
             id = uuid.hashCode(),
             name = name,
             description = description
         )
+    }
+    fun collectMessages(chatFlow: Flow<ChatCompletionChunk>): String {
+        val stringBuilder = StringBuilder()
+
+        runBlocking {
+            chatFlow.collect { chunk ->
+                // Access the content of the response
+                val content = chunk.choices[0].delta?.content
+                if (content != null) {
+                    stringBuilder.append(content)
+                }
+            }
+        }
+
+        return stringBuilder.toString()
     }
 }

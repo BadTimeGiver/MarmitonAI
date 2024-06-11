@@ -31,7 +31,7 @@ class IngredientsActivity : AppCompatActivity(), IngredientAdapter.OnIngredientC
 
         val recyclerView = findViewById<RecyclerView>(R.id.ingredientView)
         ingredientAdapter = IngredientAdapter(emptyList(), this)
-        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.layoutManager = LinearLayoutManager(this,RecyclerView.VERTICAL,false)
         recyclerView.adapter = ingredientAdapter
         setEventSubmit()
         fetchIngredients()

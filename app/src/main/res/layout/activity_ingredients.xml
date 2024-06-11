@@ -7,7 +7,6 @@
     android:layout_height="match_parent"
     tools:context=".activities.IngredientsActivity">
 
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -16,9 +15,8 @@
         <LinearLayout
             android:id="@+id/linearLayout"
             android:layout_width="match_parent"
-            android:layout_height="61dp"
-            android:orientation="horizontal"
-            android:layout_weight="1">
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
             <Button
                 android:id="@+id/ingredientsButton"
@@ -40,12 +38,11 @@
             android:id="@+id/linearLayout2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_weight="1">
+            android:orientation="horizontal">
 
             <EditText
                 android:id="@+id/barcodeInput"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
                 android:ems="10"
@@ -54,7 +51,7 @@
 
             <Button
                 android:id="@+id/submitButton"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/submit" />
@@ -63,10 +60,9 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/ingredientView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="50"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:scrollbars="vertical">
-
         </androidx.recyclerview.widget.RecyclerView>
     </LinearLayout>
 

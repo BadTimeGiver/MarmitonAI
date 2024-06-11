@@ -31,7 +31,7 @@ class RecipesActivity : AppCompatActivity(), RecipeAdapter.OnRecipeClickListener
 
         val recyclerView = findViewById<RecyclerView>(R.id.recipeView)
         recipeAdapter = RecipeAdapter(emptyList(), this)
-        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.layoutManager = LinearLayoutManager(this,RecyclerView.VERTICAL,false)
         recyclerView.adapter = recipeAdapter
         fetchRecipes()
         setEventSubmit()
@@ -74,5 +74,9 @@ class RecipesActivity : AppCompatActivity(), RecipeAdapter.OnRecipeClickListener
                 e.printStackTrace()
             }
         }
+    }
+    override fun onResume() {
+        super.onResume()
+        fetchRecipes()
     }
 }
