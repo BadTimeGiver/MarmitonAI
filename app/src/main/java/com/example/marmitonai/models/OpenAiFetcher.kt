@@ -41,7 +41,7 @@ class OpenAiFetcher {
             val request = ChatCompletionRequest(
                 model = ModelId("gpt-3.5-turbo"),
                 messages = listOf(ChatMessage(role = ChatRole("user"), content = prompt)),
-                maxTokens = 200,
+                maxTokens = 500,
                 temperature = 0.7
             )
 
