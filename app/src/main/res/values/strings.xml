@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">MarmitonAI</string>
+    <string name="ingredients">Ingredients</string>
+    <string name="recipes">Recipes</string>
+    <string name="rightarrow"><![CDATA[>]]></string>
+    <string name="barcode">Barcode</string>
+    <string name="submit">Submit</string>
 </resources>

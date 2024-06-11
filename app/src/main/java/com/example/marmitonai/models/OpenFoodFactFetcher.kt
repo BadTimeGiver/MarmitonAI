@@ -1,5 +1,6 @@
 package com.example.marmitonai.models
 
+import android.util.Log
 import com.example.marmitonai.MyApplication
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -10,7 +11,7 @@ import java.io.FileOutputStream
 import java.io.IOException
 
 class OpenFoodFactFetcher {
-    val userAgent: String = "MarmitonAi/0.1 (zyad.zekri@efrei.net)"
+    private val userAgent: String = "MarmitonAi/0.1 (zyad.zekri@efrei.net)"
     val db = AppDatabase.getDatabase(MyApplication.applicationContext())
     private val client: OkHttpClient = OkHttpClient()
 
@@ -28,7 +29,6 @@ class OpenFoodFactFetcher {
             val responseBody = response.body?.string() ?: throw IOException("Empty response")
             val json = JSONObject(responseBody)
             val product = json.getJSONObject("product")
-
             val name = product.optString("product_name", "Unknown Product")
             val servingSize = product.optInt("serving_size", 0)
             val servingUnit = product.optString("serving_quantity", "g")
@@ -58,7 +58,58 @@ class OpenFoodFactFetcher {
             db.ingredientDao().insertIngredient(ingredient)
 
         } catch (e: Exception) {
-            e.printStackTrace()
+            suspend fun ingredientCreator(barcode: String) {
+                val url = "https://world.openfoodfacts.org/api/v0/product/$barcode.json"
+                val request: Request = Request.Builder()
+                    .url(url)
+                    .addHeader("User-Agent", userAgent)
+                    .build()
+
+                try {
+                    val response: Response = client.newCall(request).execute()
+                    if (!response.isSuccessful) throw IOException("Unexpected code $response")
+                    Log.d("Response",response.toString())
+
+                    val responseBody = response.body?.string() ?: throw IOException("Empty response")
+                    val json = JSONObject(responseBody)
+                    val product = json.optJSONObject("product") ?: throw IOException("Product not found in response")
+
+                    val name = product.optString("product_name", "Unknown Product")
+                    val servingSize = product.optInt("serving_quantity", 100)
+                    val servingUnit = product.optString("serving_quantity_unit", "g")
+                    val kcal = product.optJSONObject("nutriments")?.optInt("energy-kcal_100g", 0) ?: 0
+                    val fat = product.optJSONObject("nutriments")?.optInt("fat_100g", 0) ?: 0
+                    val carbs = product.optJSONObject("nutriments")?.optInt("carbohydrates_100g", 0) ?: 0
+                    val sugars = product.optJSONObject("nutriments")?.optInt("sugars_100g", 0) ?: 0
+                    val protein = product.optJSONObject("nutriments")?.optInt("proteins_100g", 0) ?: 0
+                    val salt = product.optJSONObject("nutriments")?.optInt("salt_100g", 0) ?: 0
+                    val imageId = imageFetcher(barcode)
+
+                    val ingredient = Ingredient(
+                        barcode = barcode,
+                        name = name,
+                        servingSize = servingSize,
+                        servingUnit = servingUnit,
+                        kcal = kcal,
+                        fat = fat,
+                        carbs = carbs,
+                        sugars = sugars,
+                        protein = protein,
+                        salt = salt,
+                        imageId = imageId,
+                        quantity = 0
+                    )
+
+
+                    db.ingredientDao().insertIngredient(ingredient)
+
+                    Log.d("Database", "All ingredients in DB: $ingredient")
+
+                } catch (e: Exception) {
+                    Log.e("IngredientCreatorError", "Error creating ingredient for barcode: $barcode", e)
+                }
+            }
+
         }
     }
     suspend fun ingredientDestroyer(barcode: String){
@@ -94,7 +145,6 @@ class OpenFoodFactFetcher {
 
             return file.absolutePath
         } catch (e: Exception) {
-            e.printStackTrace()
             return ""
         }
     }
@@ -112,5 +162,8 @@ class OpenFoodFactFetcher {
                 barcode
             }
         }
+    }
+    suspend fun fetchAllIngredients(): List<Ingredient> {
+        return db.ingredientDao().loadAllIngredients()
     }
 }
